@@ -61,39 +61,68 @@ int previousState = HIGH;
 //Low == 0 == button down
 //High == 1 == button up
 
-
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(lcdRSPin, lcdEPin,
                   lcdD0Pin, lcdD1Pin, lcdD2Pin, lcdD3Pin);
 
+
+void selectView(int viewNum) {
+  switch(viewNum) {
+    case 1:
+      //Cookies
+      //Row 1
+      lcd.setCursor(0, 0);
+      lcd.print("Cookies");
+
+      //Row 2
+      lcd.setCursor(0, 1);
+      lcd.print(count);
+      break;
+    case 2:
+      //Credits
+      lcd.setCursor(0, 0);
+      lcd.print("Idea-Max Levy");
+
+      lcd.setCursor(0, 1);
+      lcd.print("Dev-Robert Eads");      
+      break;
+  }
+}
+
+
 void setup()
 {
     Serial.begin(9600);
-    // set up the LCD's number of columns and rows: 
-    lcd.begin(16, 2);
-
-    // Print a message to the LCD.
-    lcd.print("Cookies");
+    lcd.begin(16, 2); // set up the LCD's number of columns and rows: 
     pinMode(clickerPin, INPUT_PULLUP);
+    pinMode(menuPin, INPUT_PULLUP);
+    selectView(1);
 }
 
 void loop()
 {
   int clickerValue = digitalRead(clickerPin);
+  int menuValue = digitalRead(menuPin);
 
-  if(clickerValue == LOW && previousState == HIGH)
+  if(menuValue == LOW && previousState == HIGH)
   {
-    Serial.println(previousState);
+    selectView(2);
+    previousState = LOW;
+  }
+  else if(menuValue == HIGH && previousState == LOW) {
+    lcd.clear();
+    selectView(1);
+    previousState = HIGH;
+  }
+
+
+  /*if(clickerValue == LOW && previousState == HIGH)
+  {
     previousState = LOW;
     count++;
-    Serial.println(previousState);
   }
-  else if(clickerValue == HIGH && previousState == LOW) {
-    previousState = HIGH;
-  } 
+  else if(clickerValue == HIGH && previousState == LOW) {previousState = HIGH;} */
 
   //Figure out a "print screen" function that lets me choose what text I want displayed based on the number I pass in. Make "menu" button cycle that number
-
-  lcd.setCursor(0, 1);
-  lcd.print(count);
+  
 }
